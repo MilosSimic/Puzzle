@@ -1,11 +1,12 @@
-from plugin1 import A
+#from ..core.base import Plugin
+from core import Plugin
 
-class B(A):
-	def __init__(self, par1="bla", par2="bla"):
-		A.__init__(self, par1)
-		self.par2 = par2
+class B(Plugin):
+	def __init__(self, par1="bla"):
+		Plugin.__init__(self, "par1","","","","")
+		self.par1 = par1
 
-	def activate(self, **kwargs):
+	def call(self, **kwargs):
 		print 'hello from plugin 2'
 		
 	def __str__(self):

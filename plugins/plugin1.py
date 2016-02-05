@@ -3,9 +3,10 @@ from core import Plugin
 
 class A(Plugin):
 	def __init__(self, par1="bla"):
+		Plugin.__init__(self, "par1","","","","")
 		self.par1 = par1
 
-	def activate(self, **kwargs):
+	def call(self, **kwargs):
 		print 'hello from plugin 1'
 		
 	def __str__(self):

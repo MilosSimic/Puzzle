@@ -3,13 +3,11 @@ from core import Puzzle
 p = Puzzle()
 p.print_table()
 
-if p.table.get_plugin(1):
-	p.table.get_plugin(1).activate()
+a = p.table.get_plugin(0)
+b = p.table.get_plugin(1)
 
-if p.table.get_plugin(0):
-	p.table.get_plugin(0).activate()
-
-p.table.start_plugin(1)
-p.table.get_plugin(1).activate()
-
-p.print_table()
+a = p.table.activate(0)
+a.on_start()
+a.call()
+#b = b()
+#b.call()

@@ -6,26 +6,31 @@ class PluginTable(object):
 	def __init__(self):
 		self.table = {}
 
+	def activate(self, id):
+		return self.table[id]()
+
 	def get_plugin(self, id):
-		if self.table[id][1] == State.ACTIVE:
-			return self.table[id][0]()
+		try:
+			plugin = self.table[id]
+			if plugin.stanje == State.ACTIVE:
+				return plugin
+		except AttributeError, e:
+			print "plugin must be active"
 		
 	def start_plugin(self, id):
-		self.table[id][1] = State.ACTIVE
+		self.table[id].on_start()
 		
 	def stop_plugin(self, id):
-		self.table[id][1] = State.STOPPED
+		self.table[id].on_stop()
 		
 	def restart_plugin(self, id):
-		self.table[id][1] == State.RESOLVED
-
-	def _is_plugin_child(self, myclass, parentclass):
-		return issubclass(myclass, parentclass)
+		self.table[id].on_restart()
 
 	def register_plugin(self, module):
-		for idx, (name, obj) in enumerate(getmembers(module)):
-			if isclass(obj) and self._is_plugin_child(obj, Plugin):
-				self.table[idx] = [obj, State.RESOLVED]
+		for name, obj in getmembers(module):
+			if isclass(obj) and issubclass(obj, Plugin) and name != Plugin.__name__:
+				id = len(self.table)
+				self.table[id] = obj
 
 	def print_table(self):
 		print 'Plugins installed:'

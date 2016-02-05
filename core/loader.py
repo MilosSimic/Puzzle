@@ -1,7 +1,6 @@
 from imp import find_module, load_module
 from os import listdir, getcwd, sep
 from os.path import isfile, join
-from state import State
 from utils import clear, eliminate
 
 class PluginLoader(object):
