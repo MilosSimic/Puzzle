@@ -8,24 +8,37 @@ class PluginTable(object):
 		self.table = {}
 
 	def activate(self, id):
-		return self.table[id]()
+		plugin = self.table.values()[id]
+		if isclass(plugin):
+			plugin = plugin()
+
+			key = self.table.keys()[id]
+			self.table[key] = plugin
+
+			plugin.on_start()
+
+		return plugin
+
+	def activate_all(self):
+		for k, v in self.table.iteritems():
+			self.table[k] = v()
 
 	def get_plugin(self, id):
+		plugin = self.activate(id)
 		try:
-			plugin = self.table[id]
-			if plugin.stanje == State.ACTIVE:
+			if plugin.state == State.ACTIVE:
 				return plugin
 		except AttributeError, e:
 			print "plugin must be active"
 		
 	def start_plugin(self, id):
-		self.table[id].on_start()
+		self.table.values()[id].on_start()
 		
 	def stop_plugin(self, id):
-		self.table[id].on_stop()
+		self.table.values()[id].on_stop()
 		
 	def restart_plugin(self, id):
-		self.table[id].on_restart()
+		self.table.values()[id].on_restart()
 
 	def register_plugin(self, module):
 		for name, obj in getmembers(module):
