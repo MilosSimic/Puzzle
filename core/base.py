@@ -48,10 +48,16 @@ class Plugin(object):
 		pass
 
 	def on_restart(self):
-		self.on_stop()
+		if self.state == State.STOPPED:
+			self.state = State.RESTARTING
 
-		#add some methods if needed
-		self.restart()
-		self.state = state.RESOLVED
+			#add some methods if needed
+			self.restart()
 
-		self.on_start()
+			self.state = State.RESOLVED
+			self.on_start()
+		else:
+			raise LifecycleException('Lifecycle valiation exception!')
+
+	def __repr__(self):
+		return self.name

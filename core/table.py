@@ -1,6 +1,7 @@
 from state import State
 from inspect import getmembers, isclass
 from base import Plugin
+from uuid import uuid1
 
 class PluginTable(object):
 	def __init__(self):
@@ -29,10 +30,13 @@ class PluginTable(object):
 	def register_plugin(self, module):
 		for name, obj in getmembers(module):
 			if isclass(obj) and issubclass(obj, Plugin) and name != Plugin.__name__:
-				id = len(self.table)
-				self.table[id] = obj
+				self.table[uuid1()] = obj
 
 	def print_table(self):
 		print 'Plugins installed:'
-		for k,v in self.table.iteritems():
-			print k, v
+
+		fmt = '%10s %30s %20s'
+		print fmt % ('Position', 'ID', 'Name')
+		print '-' * 70
+		for idx, (k,v) in enumerate(self.table.iteritems()):
+			print fmt % (idx, k, v)
