@@ -9,9 +9,6 @@ class Plugin(object):
 		self.author = author
 		self.image = image
 		self.state = State.RESOLVED
-		
-	def activate(self, **kwargs):
-		self.on_start()
 
 	def on_start(self):
 		if self.state == State.RESOLVED:
@@ -58,6 +55,9 @@ class Plugin(object):
 			self.on_start()
 		else:
 			raise LifecycleException('Lifecycle valiation exception!')
+
+	def info(self):
+		return "Name {}, Author, Version {}".format(self.name, self.author, self.version)
 
 	def __repr__(self):
 		return self.name
