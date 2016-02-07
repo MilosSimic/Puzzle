@@ -34,20 +34,21 @@ class PluginTable(object):
 		
 	def start_plugin(self, id):
 		self.table.values()[id].on_start()
-		self.observable.notify(id=id, state=State.ACTIVE, call="on_start")
+		self.observable.notify(position=id, state=State.ACTIVE, call="on_start")
 		
 	def stop_plugin(self, id):
 		self.table.values()[id].on_stop()
-		self.observable.notify(id=id, state=State.STOPPED, call="on_start")
+		self.observable.notify(position=id, state=State.STOPPED, call="on_stop")
 		
 	def restart_plugin(self, id):
 		self.table.values()[id].on_restart()
-		self.observable.notify(id=id, state=State.RESOLVED, call="on_start")
+		self.observable.notify(position=id, state=State.RESOLVED, call="on_restart")
 
 	def register_plugin(self, module):
 		for name, obj in getmembers(module):
 			if isclass(obj) and issubclass(obj, Plugin) and name != Plugin.__name__:
 				self.table[uuid1()] = obj
+				self.observable.notify(position=len(self.table.keys()), state=State.RESOLVED, call="register_plugin")
 
 	def print_table(self):
 		print 'Plugins installed:'
