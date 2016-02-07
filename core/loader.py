@@ -4,7 +4,7 @@ from os.path import isfile, join
 from utils import clear, eliminate, PY_EXT
 
 class PluginLoader(object):
-	def __init__(self, plugins_dir='plugins', auto_load_plugins=True, plugin_table=None):
+	def __init__(self, plugins_dir, plugin_table, auto_load_plugins=True,):
 		self.plugins_dir = plugins_dir
 		self.plugin_table = plugin_table
 

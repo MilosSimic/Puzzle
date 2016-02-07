@@ -1,4 +1,4 @@
-from state import State
+from utils import State
 from excp import LifecycleException, NotImplementedException
 
 class Plugin(object):
@@ -52,7 +52,7 @@ class Plugin(object):
 			self.restart()
 
 			self.state = State.RESOLVED
-			self.on_start()
+			#self.on_start()
 		else:
 			raise LifecycleException('Lifecycle valiation exception!')
 

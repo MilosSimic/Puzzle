@@ -1,11 +1,12 @@
-from state import State
+from utils import State
 from inspect import getmembers, isclass
 from base import Plugin
 from uuid import uuid1
 
 class PluginTable(object):
-	def __init__(self):
+	def __init__(self, observable):
 		self.table = {}
+		self.observable = observable
 
 	def activate(self, id):
 		plugin = self.table.values()[id]
@@ -33,12 +34,15 @@ class PluginTable(object):
 		
 	def start_plugin(self, id):
 		self.table.values()[id].on_start()
+		self.observable.notify(id=id, state=State.ACTIVE, call="on_start")
 		
 	def stop_plugin(self, id):
 		self.table.values()[id].on_stop()
+		self.observable.notify(id=id, state=State.STOPPED, call="on_start")
 		
 	def restart_plugin(self, id):
 		self.table.values()[id].on_restart()
+		self.observable.notify(id=id, state=State.RESOLVED, call="on_start")
 
 	def register_plugin(self, module):
 		for name, obj in getmembers(module):
