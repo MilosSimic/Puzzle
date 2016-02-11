@@ -6,8 +6,11 @@ p = Puzzle()
 '''a = p.table.get_plugin(0)
 a.call()
 p.print_table()'''
-p.table.activate_all()
+#p.table.activate_all()
 p.print_table()
+p.table.activate(0)
+print p.table.get_plugin(0)
+#p.table.stop_plugin(0)
 '''b = p.table.get_plugin(1)
 
 a = p.table.activate(0)

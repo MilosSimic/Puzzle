@@ -14,14 +14,21 @@ class Plugin(object):
 		if self.state == State.RESOLVED:
 			self.state = State.STARTING
 
+			#first check the policy if valiation occur thrrow PolicyException
+			#Define your own policy, if needed
+			self.policy_check()
+
 			#do some dirty work before activate plugin
 			self.start()
 
 			self.state = State.ACTIVE
 		else:
-			raise LifecycleException('Lifecycle valiation exception!')
+			raise LifecycleException("Lifecycle valiation exception!")
 
 	def start(self):
+		pass
+
+	def policy_check(self):
 		pass
 
 	def on_stop(self):
@@ -33,7 +40,7 @@ class Plugin(object):
 
 			self.state = State.STOPPED
 		else:
-			raise LifecycleException('Lifecycle valiation exception!')
+			raise LifecycleException("Lifecycle valiation exception!")
 
 	def stop(self):
 		pass
@@ -52,12 +59,11 @@ class Plugin(object):
 			self.restart()
 
 			self.state = State.RESOLVED
-			#self.on_start()
 		else:
 			raise LifecycleException('Lifecycle valiation exception!')
 
 	def info(self):
 		return "Name {}, Author, Version {}".format(self.name, self.author, self.version)
 
-	def __repr__(self):
-		return self.name
+	def __str__(self):
+		return repr(self.name)
