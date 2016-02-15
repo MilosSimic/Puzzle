@@ -1,4 +1,4 @@
-from utils import State
+from state import *
 from excp import LifecycleException, NotImplementedException
 
 class Plugin(object):
@@ -8,18 +8,7 @@ class Plugin(object):
 		self.version = version
 		self.author = author
 		self.image = image
-		self.state = State.RESOLVED
-
-	def on_start(self):
-		if self.state == State.RESOLVED:
-			self.state = State.STARTING
-
-			#do some dirty work before activate plugin
-			self.start()
-
-			self.state = State.ACTIVE
-		else:
-			raise LifecycleException("Lifecycle valiation exception!")
+		self.state = Resolved()
 
 	def start(self):
 		#first check the policy if valiation occur thrrow PolicyException
@@ -32,17 +21,6 @@ class Plugin(object):
 	def policy_check(self):
 		pass
 
-	def on_stop(self):
-		if self.state == State.ACTIVE:
-			self.state = State.STOPPIMG
-
-			#release what you have
-			self.stop()
-
-			self.state = State.STOPPED
-		else:
-			raise LifecycleException("Lifecycle valiation exception!")
-
 	def stop(self):
 		pass
 
@@ -52,29 +30,8 @@ class Plugin(object):
 	def restart(self):
 		pass
 
-	def on_restart(self):
-		if self.state == State.STOPPED:
-			self.state = State.RESTARTING
-
-			#add some methods if needed
-			self.restart()
-
-			self.state = State.RESOLVED
-		else:
-			raise LifecycleException('Lifecycle valiation exception!')
-
 	def unregister(self):
 		pass
-
-	def on_unregister(self):
-		if self.state in [State.STOPPED, State.RESOLVED, State.INSTALLED]:
-			self.state = State.UNINSTALLED
-
-			#if need something do it here
-			self.unregister()
-		else:
-			raise LifecycleException('Lifecycle valiation exception!')
-
 
 	def info(self):
 		return "Name {}, Author, Version {}".format(self.name, self.author, self.version)
