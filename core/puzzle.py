@@ -8,7 +8,8 @@ class Puzzle(object):
 		#self.loader = PluginLoader(plugins_dir, self.table)
 
 	def print_table(self):
-		self.table.print_table()
+		for line in self.table.print_table():
+			print line
 
 	def load_plugins(self):
 		self.table.load_plugins()

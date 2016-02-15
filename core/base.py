@@ -14,10 +14,6 @@ class Plugin(object):
 		if self.state == State.RESOLVED:
 			self.state = State.STARTING
 
-			#first check the policy if valiation occur thrrow PolicyException
-			#Define your own policy, if needed
-			self.policy_check()
-
 			#do some dirty work before activate plugin
 			self.start()
 
@@ -26,7 +22,12 @@ class Plugin(object):
 			raise LifecycleException("Lifecycle valiation exception!")
 
 	def start(self):
-		pass
+		#first check the policy if valiation occur thrrow PolicyException
+		#Define your own policy, if needed
+		self.policy_check()
+
+		#rest of start goes here :D
+
 
 	def policy_check(self):
 		pass
@@ -67,6 +68,8 @@ class Plugin(object):
 
 	def on_unregister(self):
 		if self.state in [State.STOPPED, State.RESOLVED, State.INSTALLED]:
+			self.state = State.UNINSTALLED
+
 			#if need something do it here
 			self.unregister()
 		else:

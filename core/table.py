@@ -25,11 +25,13 @@ class PluginTable(object):
 			self.table[key] = plugin
 
 			self.start_plugin(id)
+			self.observable.notify(position=id, state=State.ACTIVE, call="activate")
 
 	def activate_all(self):
 		for k, v in self.table.iteritems():
 			if isclass(v):
 				self.table[k] = v()
+				self.observable.notify(position=id, state=State.ACTIVE, call="activate_all")
 
 	@proxy
 	def get_plugin(self, id):
@@ -47,7 +49,7 @@ class PluginTable(object):
 		if plugin.state == State.ACTIVE:
 			return plugin
 		else:
-			print plugin.info()
+			return plugin.info()
 	
 	def start_plugin(self, id):
 		'''
@@ -90,25 +92,35 @@ class PluginTable(object):
 		plugin = self.table.values()[id]
 		key = self.table.keys()[id]
 		plugin.on_unregister()
+		self.observable.notify(position=id, state=State.UNINSTALLED, call="unregister_plugin")
+
+		#remove old instance
+		self.table[key] = None
 
 		if update:
 			module = self.loader.reload_plugin(plugin.__module__)
 			self.register_plugin(module, key)
 			return
 
+		self.observable.notify(position=id, state=None, call="unregister_plugin")
+		#if no update/refresh plugin then delete
 		del self.table[key]
 
 	def print_table(self):
-		print 'Plugins installed:'
+		table = []
+		table.append('Plugins installed:')
 
 		fmt = '%15s %15s %15s %25s'
-		print fmt % ('Position', 'Name', 'State', 'ID')
-		print '-' * 80
+		table.append(fmt % ('Position', 'Name', 'State', 'ID'))
+		table.append('-' * 80)
+
 		for idx, (k,v) in enumerate(self.table.iteritems()):
 			try:
-				print fmt % (idx, v, v.state, k)
+				table.append(fmt % (idx, v, v.state, k))
 			except AttributeError, e:
-				print fmt % (idx, v.__name__, State.INSTALLED, k)
+				table.append(fmt % (idx, v.__name__, State.INSTALLED, k))
+
+		return table
 
 	def load_plugins(self):
 		for module in self.loader.load_plugins():
