@@ -62,6 +62,17 @@ class Plugin(object):
 		else:
 			raise LifecycleException('Lifecycle valiation exception!')
 
+	def unregister(self):
+		pass
+
+	def on_unregister(self):
+		if self.state in [State.STOPPED, State.RESOLVED, State.INSTALLED]:
+			#if need something do it here
+			self.unregister()
+		else:
+			raise LifecycleException('Lifecycle valiation exception!')
+
+
 	def info(self):
 		return "Name {}, Author, Version {}".format(self.name, self.author, self.version)
 
