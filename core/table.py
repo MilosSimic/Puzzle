@@ -9,7 +9,7 @@ class PluginTable(object):
 	def __init__(self, observable, plugins_dir):
 		self.table = {}
 		self.observable = observable
-		self.loader = PluginLoader(plugins_dir)
+		self.loader = PluginLoader(plugins_dir, auto_load_plugins=True)
 
 	def activate(self, id):
 		'''
@@ -48,7 +48,7 @@ class PluginTable(object):
 			return plugin
 		else:
 			print plugin.info()
-		
+	
 	def start_plugin(self, id):
 		'''
 		throws:

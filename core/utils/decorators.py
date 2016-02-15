@@ -11,14 +11,3 @@ def proxy(f):
 		return f(*args, **kwargs)
 		
 	return wrap
-
-def notify(**params):
-	def decor(f):
-		def wrap(*args, **kwargs):
-			instance = args[0]
-			f(*args, **kwargs)
-
-			instance.observable.notify(**params)
-
-		return wrap
-	return decor
