@@ -1,9 +1,10 @@
-from utils import State, proxy
+from utils import proxy
 from inspect import getmembers, isclass
 from base import Plugin
 from uuid import uuid1
 from excp import LifecycleException
 from loader import PluginLoader
+from state import state_const
 
 class PluginTable(object):
 	def __init__(self, observable, plugins_dir):
@@ -25,13 +26,13 @@ class PluginTable(object):
 			self.table[key] = plugin
 
 			self.start_plugin(id)
-			self.observable.notify(position=id, state=State.ACTIVE, call="activate")
+			self.observable.notify(position=id, state='ACTIVE', call="activate")
 
 	def activate_all(self):
 		for k, v in self.table.iteritems():
 			if isclass(v):
 				self.table[k] = v()
-				self.observable.notify(position=id, state=State.ACTIVE, call="activate_all")
+				self.observable.notify(position=id, state='ACTIVE', call="activate_all")
 
 	@proxy
 	def get_plugin(self, id):
@@ -59,23 +60,40 @@ class PluginTable(object):
 			LifecycleException if try to valiate lifecycle
 		'''
 
-		self.table.values()[id].on_start()
-		self.observable.notify(position=id, state=State.ACTIVE, call="start_plugin")
+		plugin = self.table.values()[id]
+		plugin.state.on_start(plugin)
+		self.observable.notify(position=id, state='ACTIVE', call="start_plugin")
 		
 	def stop_plugin(self, id):
-		self.table.values()[id].on_stop()
-		self.observable.notify(position=id, state=State.STOPPED, call="stop_plugin")
+		'''
+		throws:
+			TypeError if plugin is not activated
+			IndexError if plugin desen't exists
+			LifecycleException if try to valiate lifecycle
+		'''
+
+		plugin = self.table.values()[id]
+		plugin.state.on_stop(plugin)
+		self.observable.notify(position=id, state='STOPPED', call="stop_plugin")
 		
 	def restart_plugin(self, id):
-		self.table.values()[id].on_restart()
-		self.observable.notify(position=id, state=State.RESOLVED, call="restart_plugin")
+		'''
+		throws:
+			TypeError if plugin is not activated
+			IndexError if plugin desen't exists
+			LifecycleException if try to valiate lifecycle
+		'''
+
+		plugin = self.table.values()[id]
+		plugin.state.on_restart(plugin)
+		self.observable.notify(position=id, state='RESOLVED', call="restart_plugin")
 
 	def register_plugin(self, module, key=None):
 		if not key:
 			key = uuid1()
 
 		self.table[key] = self.extract_plugin(module)
-		self.observable.notify(position=len(self.table.keys()), state=State.RESOLVED, call="register_plugin")
+		self.observable.notify(position=len(self.table.keys()), state='RESOLVED', call="register_plugin")
 
 	def extract_plugin(self, module):
 		for name, obj in getmembers(module):
@@ -91,8 +109,8 @@ class PluginTable(object):
 
 		plugin = self.table.values()[id]
 		key = self.table.keys()[id]
-		plugin.on_unregister()
-		self.observable.notify(position=id, state=State.UNINSTALLED, call="unregister_plugin")
+		plugin.state.on_unregister(plugin)
+		self.observable.notify(position=id, state='UNINSTALLED', call="unregister_plugin")
 
 		#remove old instance
 		self.table[key] = None
@@ -118,7 +136,7 @@ class PluginTable(object):
 			try:
 				table.append(fmt % (idx, v, v.state, k))
 			except AttributeError, e:
-				table.append(fmt % (idx, v.__name__, State.INSTALLED, k))
+				table.append(fmt % (idx, v.__name__, repr(state_const.INSTALLED), k))
 
 		return table
 

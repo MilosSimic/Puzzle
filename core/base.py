@@ -1,4 +1,4 @@
-from state import *
+from core.state import Resolved
 from excp import LifecycleException, NotImplementedException
 
 class Plugin(object):
@@ -17,7 +17,6 @@ class Plugin(object):
 
 		#rest of start goes here :D
 
-
 	def policy_check(self):
 		pass
 
@@ -25,7 +24,7 @@ class Plugin(object):
 		pass
 
 	def call(self, **kwargs):
-		raise NotImplementedException("Don't be lazy, implement plugin :D!")
+		raise NotImplementedException("Don't be lazy, implement your plugin :D!")
 
 	def restart(self):
 		pass
