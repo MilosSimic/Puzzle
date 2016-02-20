@@ -8,7 +8,7 @@ class Plugin(object):
 		self.version = version
 		self.author = author
 		self.image = image
-		self.state = Resolved()
+		self.state = Resolved(self)
 
 	def start(self):
 		#first check the policy if valiation occur thrrow PolicyException

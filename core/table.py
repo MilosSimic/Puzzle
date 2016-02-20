@@ -61,7 +61,7 @@ class PluginTable(object):
 		'''
 
 		plugin = self.table.values()[id]
-		plugin.state.on_start(plugin)
+		plugin.state.on_start()
 		self.observable.notify(position=id, state='ACTIVE', call="start_plugin")
 		
 	def stop_plugin(self, id):
@@ -73,7 +73,7 @@ class PluginTable(object):
 		'''
 
 		plugin = self.table.values()[id]
-		plugin.state.on_stop(plugin)
+		plugin.state.on_stop()
 		self.observable.notify(position=id, state='STOPPED', call="stop_plugin")
 		
 	def restart_plugin(self, id):
@@ -85,7 +85,7 @@ class PluginTable(object):
 		'''
 
 		plugin = self.table.values()[id]
-		plugin.state.on_restart(plugin)
+		plugin.state.on_restart()
 		self.observable.notify(position=id, state='RESOLVED', call="restart_plugin")
 
 	def register_plugin(self, module, key=None):
@@ -109,7 +109,7 @@ class PluginTable(object):
 
 		plugin = self.table.values()[id]
 		key = self.table.keys()[id]
-		plugin.state.on_unregister(plugin)
+		plugin.state.on_unregister()
 		self.observable.notify(position=id, state='UNINSTALLED', call="unregister_plugin")
 
 		#remove old instance
