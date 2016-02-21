@@ -14,7 +14,12 @@ class PluginTable(object):
 
 	def activate(self, id):
 		'''
-		throws:
+		Function that active single plugin
+
+		Args:
+			id (int): plugin position in table to activate
+
+		Raises:
 			IndexError if plugin doesn't exists
 		'''
 
@@ -29,6 +34,10 @@ class PluginTable(object):
 			self.observable.notify(position=id, state='ACTIVE', call="activate")
 
 	def activate_all(self):
+		'''
+			Funcntion that activate all plugins one by one
+		'''
+
 		for k, v in self.table.iteritems():
 			if isclass(v):
 				self.table[k] = v()
@@ -40,7 +49,14 @@ class PluginTable(object):
 			Proxy-Lazy implementatino. Try to get plugin if can.
 			If can't, then initialise plugin then return it
 
-			throws:
+			Args:
+				id (int): plugin position in table to get
+
+			Returns:
+				if plugin is in ACTIVE state then return plugin instance,
+				else return plugin info
+
+			Raises:
 				AttributeError if plugin is not resolved
 				IndexError if plugin doesn't exists
 		'''
@@ -54,7 +70,12 @@ class PluginTable(object):
 	
 	def start_plugin(self, id):
 		'''
-		throws:
+		Function that start plugin. Call on_start method from lifecycle of plugin
+
+		Args:
+			id (int): plugin position in table to start
+
+		Raises:
 			TypeError if plugin is not activated
 			IndexError if plugin desen't exists
 			LifecycleException if try to valiate lifecycle
@@ -66,7 +87,12 @@ class PluginTable(object):
 		
 	def stop_plugin(self, id):
 		'''
-		throws:
+		Function that stop plugin
+
+		Args:
+			id (int): plugin position in table to stop
+
+		Raises:
 			TypeError if plugin is not activated
 			IndexError if plugin desen't exists
 			LifecycleException if try to valiate lifecycle
@@ -78,7 +104,12 @@ class PluginTable(object):
 		
 	def restart_plugin(self, id):
 		'''
-		throws:
+		Restart plugin state
+
+		Args:
+			id (int): plugin position in table to restart plugin state
+
+		Raises:
 			TypeError if plugin is not activated
 			IndexError if plugin desen't exists
 			LifecycleException if try to valiate lifecycle
@@ -89,6 +120,13 @@ class PluginTable(object):
 		self.observable.notify(position=id, state='RESOLVED', call="restart_plugin")
 
 	def register_plugin(self, module, key=None):
+		'''
+		Register new plugin into plugins table
+
+		Args:
+			module (python module): module to be registered
+			key (uuid string): key for plugin. If None, new plugin is created, else update plugin is done
+		'''
 		if not key:
 			key = uuid1()
 
@@ -96,13 +134,31 @@ class PluginTable(object):
 		self.observable.notify(position=len(self.table.keys()), state='RESOLVED', call="register_plugin")
 
 	def extract_plugin(self, module):
+		'''
+		Extract plugin class from module. Plugin class is class that inherite Plugin and override it
+
+		Args:
+			module (python module): modue to extract class from
+
+		Returns:
+			class that inherite Plugin folder.
+
+		NOTE: only ONE class need to be in file!
+		'''
+
 		for name, obj in getmembers(module):
 			if isclass(obj) and issubclass(obj, Plugin) and name not in Plugin.__name__:
 				return obj
 
 	def unregister_plugin(self, id, update=False):
 		'''
-			Raise:
+			Function that unregister plugin and/or update plugin.
+
+			Args:
+				id (int): plugin position in table to unregister/update
+				update (bool): optional argumet to tell should plugin update or not
+
+			Raises:
 				IndexError: plugin desen't exists
 				LifecycleException: try to valiate plugin lifecycle
 		'''
@@ -125,6 +181,13 @@ class PluginTable(object):
 		del self.table[key]
 
 	def print_table(self):
+		'''
+			Print table that contains plugins
+
+			Returns:
+				table (list): list of strings taht contains id, key, name, state of plugin
+		'''
+
 		table = []
 		table.append('Plugins installed:')
 
@@ -141,5 +204,9 @@ class PluginTable(object):
 		return table
 
 	def load_plugins(self):
+		'''
+		Register single plugin in plugins table
+		'''
+
 		for module in self.loader.load_plugins():
 			self.register_plugin(module)
