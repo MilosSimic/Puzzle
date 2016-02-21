@@ -31,6 +31,8 @@ class PluginLoader(object):
 		if not folder:
 			folder = self.path
 
+		return self.get_from_path(path, folder)
+
 	def reload_plugin(self, file):
 		return self.get_from_path(file, self.path)
 
