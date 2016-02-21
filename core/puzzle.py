@@ -2,7 +2,7 @@ from table import PluginTable
 from callbacks import Observable
 
 class Puzzle(object):
-	def __init__(self, plugins_dir='plugins'):
+	def __init__(self, plugins_dir):
 		self.observable = Observable()
 		self.table = PluginTable(self.observable, plugins_dir)
 

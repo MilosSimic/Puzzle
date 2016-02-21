@@ -1,6 +1,10 @@
 from core import Puzzle
+from os.path import isfile, join
+from os import getcwd
 
-p = Puzzle()
+path = join(getcwd(), 'plugins')
+
+p = Puzzle(plugins_dir=path)
 
 p.load_plugins()
 p.print_table()

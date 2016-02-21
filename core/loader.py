@@ -5,8 +5,7 @@ from utils import clear, eliminate, PY_EXT
 
 class PluginLoader(object):
 	def __init__(self, plugins_dir, auto_load_plugins=False):
-		self.plugins_dir = plugins_dir
-		self.path = join(getcwd(), self.plugins_dir)
+		self.path = plugins_dir
 
 		if auto_load_plugins:
 			self.load_plugins()
@@ -18,7 +17,7 @@ class PluginLoader(object):
 
 	def load_plugins(self):
 		'''
-			Throws:
+			Raise:
 				ImportError : if module or plugins folder don't exists
 		'''
 
@@ -38,7 +37,7 @@ class PluginLoader(object):
 
 	def get_from_path(self, file, folder):
 		'''
-			Throws:
+			Raise:
 				ImportError : if module can't be find
 		'''
 
