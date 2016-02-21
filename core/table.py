@@ -105,6 +105,7 @@ class PluginTable(object):
 			Raise:
 				IndexError: plugin desen't exists
 				LifecycleException: try to valiate plugin lifecycle
+				AttributeError: try to unregister plutgin that is not RESOLVED
 		'''
 
 		plugin = self.table.values()[id]
@@ -123,6 +124,21 @@ class PluginTable(object):
 		self.observable.notify(position=id, state=None, call="unregister_plugin")
 		#if no update/refresh plugin then delete
 		del self.table[key]
+
+	def unregister_all_plugins(self):
+		'''
+			Raise:
+				IndexError: plugin desen't exists
+				LifecycleException: try to valiate plugin lifecycle
+				AttributeError: try to unregister plutgin that is not RESOLVED
+		'''
+
+		for id, (k, v) in enumerate(self.table.iteritems()):
+			v.state.on_unregister()
+			self.observable.notify(position=id, state='UNINSTALLED', call="unregister_plugin")
+		
+		self.table.clear()
+
 
 	def print_table(self):
 		table = []
@@ -143,3 +159,17 @@ class PluginTable(object):
 	def load_plugins(self):
 		for module in self.loader.load_plugins():
 			self.register_plugin(module)
+
+	def plugin_register(self):
+		'''
+			Coroutine, a hook to register plugin. Producer-Consumer
+			Loader class filter all files and deliver only those who
+			are plugins. then table register them.
+		'''
+		while True:
+			file = (yield)
+			module = self.loader.load_plugin(file)
+			self.register_plugin(module)
+
+	def pipeline(self):
+		self.loader.registration_plugin_pipeline(self.plugin_register)
