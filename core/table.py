@@ -5,12 +5,14 @@ from uuid import uuid1
 from excp import LifecycleException
 from loader import PluginLoader
 from state import state_const
+import PluginDownloader
 
 class PluginTable(object):
 	def __init__(self, observable, plugins_dir):
 		self.table = {}
 		self.observable = observable
 		self.loader = PluginLoader(plugins_dir, auto_load_plugins=True)
+		self.downloader = PluginDownloader(plugin_path)
 
 	def activate(self, id):
 		'''
@@ -210,3 +212,18 @@ class PluginTable(object):
 
 		for module in self.loader.load_plugins():
 			self.register_plugin(module)
+
+	def download_pack_and_register(self, url):
+		'''
+			Download zip file from internet, unpack it and register as new plugin.
+			Archive must contains *.py file, and might contains folder(module) with
+			other files important to plugin.
+
+			Args:
+				url (string): url location to zip archive
+
+		'''
+
+		plugin_path = self.downloader.download_puzzle_part(url)
+		module = self.loader.load_plugin(plugin_path)
+		self.register_plugin(module)
