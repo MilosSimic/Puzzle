@@ -1,5 +1,5 @@
 from core import Puzzle
-from os.path import isfile, join
+from os.path import isfile, join, getsize
 from os import getcwd
 
 path = join(getcwd(), 'plugins')
@@ -16,4 +16,10 @@ p.print_table()
 p.table.stop_plugin(1)
 p.print_table()
 p.table.restart_plugin(1)
+p.print_table()
+
+url = 'file:///Users/milossimic/Desktop/ziptest/plugin3.zip'
+ff = '/Users/milossimic/Desktop/ziptest/plugin3.zip'
+fsize = getsize(ff)
+p.download_puzzle_part(url, fsize)
 p.print_table()

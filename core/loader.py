@@ -53,7 +53,6 @@ class PluginLoader(object):
 
 			Returns:
 				module (module): return module that contains class that inherate Plugin class
-
 		'''
 
 		if not folder:
@@ -79,7 +78,7 @@ class PluginLoader(object):
 				ImportError : if module can't be find
 		'''
 
-		f, filename, description =  find_module(file, [folder])
+		f, filename, description = find_module(file, [folder])
 		module = self.create_module(file, f, filename, description)
 		f.close()
 

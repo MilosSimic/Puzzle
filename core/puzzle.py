@@ -13,5 +13,5 @@ class Puzzle(object):
 	def load_plugins(self):
 		self.table.load_plugins()
 
-	def download_puzzle_part(self, url):
-		self.table.download_pack_and_register(url)
+	def download_puzzle_part(self, url, size=None):
+		self.table.download_pack_and_register(url, size)

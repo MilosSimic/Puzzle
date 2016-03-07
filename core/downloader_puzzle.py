@@ -33,7 +33,9 @@ class PluginDownloader(object):
 		'''
 
 		if '.zip' in path_to_zip_file:
-			return path_to_zip_file.replace('.zip', '.py')
+			replaced = path_to_zip_file.split(os.sep)[-1]
+			#return replaced.split('.')[0] #get only name
+			return replaced.split('.')[0]
 
 		raise ValidationException('Not valid puzzle pack!')
 
@@ -97,7 +99,7 @@ class PluginDownloader(object):
 
 		return file_name #some/path/to/file.zip
 
-	def download_puzzle_part(self, url):
+	def download_puzzle_part(self, url, size=None):
 		'''
 			method that wrap not things. Download zip archive then unpack it.
 			After that delete archive, and return full path to extracted py file.
@@ -110,9 +112,8 @@ class PluginDownloader(object):
 				file_name (string): path_to_zip_file (string): path replace .zip to .py in name
 		'''
 
-
 		#download
-		zip_file = self.download_pack(url)
+		zip_file = self.download_pack(url, size)
 
 		#unzip archive
 		self.unpack_archive(zip_file)
