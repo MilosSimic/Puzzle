@@ -3,6 +3,8 @@ from os import listdir, getcwd, sep
 from os.path import isfile, join
 from utils import clear, eliminate, PY_EXT
 
+INIT_FILE = '__init__.py'
+
 class PluginLoader(object):
 	'''
 		Class that do work on loading plugins from specific folder.
@@ -13,10 +15,29 @@ class PluginLoader(object):
 	'''
 
 	def __init__(self, plugins_dir, auto_load_plugins=False):
-		self.path = plugins_dir
+		self.path = self.prepare_plugins_dir(plugins_dir)
 
 		if auto_load_plugins:
 			self.load_plugins()
+
+	def prepare_plugins_dir(self, plugins_dir):
+		'''
+			Test if given path contains __init__.py file. If not,
+			then create file and return path, else just return path.
+
+			Args:
+				plugins_dir (string): path to test
+
+			Returns:
+				plugins_dir (string): path to plugins dir
+		'''
+
+		if "__init__.py" not in listdir(plugins_dir):
+			file = join(plugins_dir, "__init__.py")
+			with open(file, 'w') as f:
+				pass
+		
+		return plugins_dir
 
 	def files_generator(self, path):
 		'''
