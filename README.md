@@ -13,4 +13,12 @@ import os
 ...
 ```
 ## Features
-in progress :)
+- Load new plugins
+- Show table with installed plugins and their states
+- Maintain plugin lifecycle
+- Download zip archive with plugin content and install it automatically
+- Remove,update, register/install plugins
+- Prepare any folder as <i>plugins</i> folder
+- If plugin change, reload/refresh installed plugin
+- Maintain security before plugin loads
+- Simple interface to develop new plugins
