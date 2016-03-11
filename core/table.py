@@ -4,7 +4,7 @@ from base import Plugin
 from uuid import uuid1
 from excp import LifecycleException
 from loader import PluginLoader
-from state import state_const
+from state import state_const, statemachine
 from downloader_puzzle import PluginDownloader
 
 class PluginTable(object):
@@ -64,8 +64,8 @@ class PluginTable(object):
 		'''
 
 		plugin = self.table.values()[id]
-		
-		if plugin.state == State.ACTIVE:
+	
+		if isinstance(plugin.state, statemachine.State):
 			return plugin
 		else:
 			return plugin.info()
@@ -163,6 +163,7 @@ class PluginTable(object):
 			Raises:
 				IndexError: plugin desen't exists
 				LifecycleException: try to valiate plugin lifecycle
+				AttributeError: if plugin is not RESOLVED
 		'''
 
 		plugin = self.table.values()[id]
