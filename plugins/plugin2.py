@@ -1,4 +1,3 @@
-#from ..core.base import Plugin
 from core import Plugin
 
 class B(Plugin):
