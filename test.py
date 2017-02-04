@@ -29,6 +29,14 @@ from core.state import statemachine
 # p.table.restart_plugin(0)
 # p.print_table()
 
+# url = 'file:///Users/milossimic/Desktop/plugin3.zip'
+# ff = '/Users/milossimic/Desktop/plugin3.zip'
+
+# fsize = getsize(ff)
+# p.download_puzzle_part(url)
+# p.print_table()
+
+
 class PuzzleTestBasic(unittest.TestCase):
 
 	def setUp(self):
@@ -47,6 +55,10 @@ class PuzzleTestBasic(unittest.TestCase):
 		self.p.load_plugins()
 		self.assertEqual(self.p.table.size(), 2)
 
+	def test_plugins_instalation(self):
+		for id,(key, plugin) in enumerate(self.p.table_items()):
+			self.assertTrue(issubclass(plugin, Plugin))
+
 
 class PuzzleTestLifecycle(unittest.TestCase):
 
@@ -58,7 +70,7 @@ class PuzzleTestLifecycle(unittest.TestCase):
 
 	def test_loading_plugins(self):
 		self.p.load_plugins()
-		self.assertEqual(self.p.table.size(), 2)
+		self.assertEqual(self.p.table.size(), 3)
 
 	def test_resolve_state(self):
 		self.p.load_plugins()
@@ -99,7 +111,7 @@ class PuzzleTestLifecycle(unittest.TestCase):
 
 		self.p.table.stop_plugin(0)
 		self.p.table.unregister_plugin(0, False)
-		self.assertEqual(self.p.table.size(), 1)
+		self.assertEqual(self.p.table.size(), 2)
 
 	def test_unregister_plugin_refresh(self):
 		self.p.load_plugins()
@@ -108,7 +120,7 @@ class PuzzleTestLifecycle(unittest.TestCase):
 
 		self.p.table.stop_plugin(0)
 		self.p.table.unregister_plugin(0, True)
-		self.assertEqual(self.p.table.size(), 2)
+		self.assertEqual(self.p.table.size(), 3)
 
 	def test_resolve_plugin_after_refresh(self):
 		self.p.load_plugins()
@@ -123,29 +135,22 @@ class PuzzleTestLifecycle(unittest.TestCase):
 		self.assertIsInstance(plugin.state, statemachine.Resolved)
 
 
-'''
-#Test download zip archive with plugin
-url = 'file:///Users/milossimic/Desktop/ziptest/plugin3.zip'
-ff = '/Users/milossimic/Desktop/ziptest/plugin3.zip'
-fsize = getsize(ff)
-p.download_puzzle_part(url, fsize)
-p.print_table()
-'''
+class PuzzleTestDownloadPluginArchive(unittest.TestCase):
 
-# class TestInstalation(unittest.TestCase):
-# 	def setUp(self):
-# 		self.p = Puzzle(plugins_dir=path)
-# 		self.p.load_plugins()
+	def setUp(self):
+		self.p = Puzzle(plugins_dir=join(getcwd(), 'plugins'))
 
-# 	def test_plugins_instalation(self):
-# 		for id,(key, plugin) in enumerate(self.p.table.table.iteritems()):
-# 			self.assertTrue(issubclass(plugin, Plugin))
+	def test_download_archive(self):
+		self.p.load_plugins()
 
-# 	def test_load_plugins(self):
-# 		self.assertEqual(len(self.p.table.table), 2)
+		url = 'file:///Users/milossimic/Desktop/plugin3.zip'
+		self.p.download_puzzle_part(url)
 
-# 	def tearDown(self):
-# 		pass
+		self.assertEqual(self.p.table.size(), 3)
+
+	def test_plugins_instalation(self):
+		for id,(key, plugin) in enumerate(self.p.table_items()):
+			self.assertTrue(issubclass(plugin, Plugin))
 		
 
 if __name__ == '__main__':
