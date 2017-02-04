@@ -1,22 +1,25 @@
-from utils import proxy
+from utils import restrict_proxy, restrict_init
 from inspect import getmembers, isclass
 from base import Plugin
-from uuid import uuid1
 from excp import LifecycleException
 from loader import PluginLoader
-from state import state_const
+from state import state_const, statemachine
 from downloader_puzzle import PluginDownloader
+from collections import OrderedDict
+from hashlib import md5
 
 class PluginTable(object):
+
 	def __init__(self, observable, plugins_dir):
-		self.table = {}
+		self.table = OrderedDict()
 		self.observable = observable
 		self.loader = PluginLoader(plugins_dir, auto_load_plugins=True)
 		self.downloader = PluginDownloader(plugins_dir)
 
-	def activate(self, id):
+	#@restrict_init(wait_time=6)
+	def resolve(self, id):
 		'''
-		Function that active single plugin
+		Function that resolve single plugin
 
 		Args:
 			id (int): plugin position in table to activate
@@ -31,21 +34,18 @@ class PluginTable(object):
 
 			key = self.table.keys()[id]
 			self.table[key] = plugin
+			self.observable.notify(position=id, state='RESOLVED', call="resolve")
 
-			self.start_plugin(id)
-			self.observable.notify(position=id, state='ACTIVE', call="activate")
-
-	def activate_all(self):
+	def resolve_all(self):
 		'''
-			Funcntion that activate all plugins one by one
+			Funcntion that resolve all plugins one by one
 		'''
 
-		for k, v in self.table.iteritems():
-			if isclass(v):
-				self.table[k] = v()
-				self.observable.notify(position=id, state='ACTIVE', call="activate_all")
+		for idx, (k,v) in enumerate(self.table.items()):
+			self.resolve(idx)
+			self.observable.notify(position=idx, state='RESOLVED', call="resolve_all")
 
-	@proxy
+	#@restrict_proxy(active=False)
 	def get_plugin(self, id):
 		'''
 			Proxy-Lazy implementatino. Try to get plugin if can.
@@ -64,8 +64,8 @@ class PluginTable(object):
 		'''
 
 		plugin = self.table.values()[id]
-		
-		if plugin.state == State.ACTIVE:
+	
+		if isinstance(plugin.state, statemachine.State):
 			return plugin
 		else:
 			return plugin.info()
@@ -86,7 +86,16 @@ class PluginTable(object):
 		plugin = self.table.values()[id]
 		plugin.state.on_start()
 		self.observable.notify(position=id, state='ACTIVE', call="start_plugin")
-		
+	
+	def activate_all(self):
+		'''
+			Funcntion that activate all plugins one by one
+		'''
+
+		for idx, (k,v) in enumerate(self.table.items()):
+			self.start_plugin(idx)
+			self.observable.notify(position=idx, state='ACTIVE', call="activate_all")
+
 	def stop_plugin(self, id):
 		'''
 		Function that stop plugin
@@ -129,11 +138,14 @@ class PluginTable(object):
 			module (python module): module to be registered
 			key (uuid string): key for plugin. If None, new plugin is created, else update plugin is done
 		'''
-		if not key:
-			key = uuid1()
 
-		self.table[key] = self.extract_plugin(module)
-		self.observable.notify(position=len(self.table.keys()), state='RESOLVED', call="register_plugin")
+		obj, hash_key = self.extract_plugin(module)
+
+		if not key:
+			key = hash_key
+
+		self.table[key] = obj
+		self.observable.notify(position=len(self.table.keys()), state='INSTALLED', call="register_plugin")
 
 	def extract_plugin(self, module):
 		'''
@@ -150,7 +162,7 @@ class PluginTable(object):
 
 		for name, obj in getmembers(module):
 			if isclass(obj) and issubclass(obj, Plugin) and name not in Plugin.__name__:
-				return obj
+				return obj, md5(obj.__name__).hexdigest()
 
 	def unregister_plugin(self, id, update=False):
 		'''
@@ -163,6 +175,7 @@ class PluginTable(object):
 			Raises:
 				IndexError: plugin desen't exists
 				LifecycleException: try to valiate plugin lifecycle
+				AttributeError: if plugin is not RESOLVED
 		'''
 
 		plugin = self.table.values()[id]
@@ -182,6 +195,11 @@ class PluginTable(object):
 		#if no update/refresh plugin then delete
 		del self.table[key]
 
+	def unregister_all_plugins(self):
+		for idx, (k,v) in enumerate(self.table.items()):
+			self.stop_plugin(idx)
+			self.unregister_plugin(idx)
+
 	def print_table(self):
 		'''
 			Print table that contains plugins
@@ -194,14 +212,14 @@ class PluginTable(object):
 		table.append('Plugins installed:')
 
 		fmt = '%15s %15s %15s %25s'
-		table.append(fmt % ('Position', 'Name', 'State', 'ID'))
+		table.append(fmt % ('ID', 'Position', 'Name', 'State'))
 		table.append('-' * 80)
-
+		
 		for idx, (k,v) in enumerate(self.table.iteritems()):
 			try:
-				table.append(fmt % (idx, v, v.state, k))
+				table.append(fmt % (k, idx, v, v.state))
 			except AttributeError, e:
-				table.append(fmt % (idx, v.__name__, repr(state_const.INSTALLED), k))
+				table.append(fmt % (k, idx, v.__name__, repr(state_const.INSTALLED)))
 
 		return table
 
@@ -227,3 +245,8 @@ class PluginTable(object):
 		plugin_path = self.downloader.download_puzzle_part(url, size)
 		module = self.loader.load_plugin(file=plugin_path)
 		self.register_plugin(module)
+
+	def size(self):
+		return len(self.table)
+
+		

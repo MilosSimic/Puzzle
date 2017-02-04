@@ -15,3 +15,6 @@ class Puzzle(object):
 
 	def download_puzzle_part(self, url, size=None):
 		self.table.download_pack_and_register(url, size)
+
+	def table_items(self):
+		return self.table.table.iteritems()

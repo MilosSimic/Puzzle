@@ -1,10 +1,11 @@
-#from ..core.base import Plugin
 from core import Plugin
+from time import sleep
 
 class A(Plugin):
 	def __init__(self, par1="bla1"):
 		Plugin.__init__(self, "par1","","","","")
 		self.par1 = par1
+		#sleep(3)
 
 	def call(self, **kwargs):
 		print 'hello from plugin 1'
