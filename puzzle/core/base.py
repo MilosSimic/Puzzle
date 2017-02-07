@@ -1,4 +1,4 @@
-from core.state import Resolved
+from state import Resolved
 from excp import LifecycleException, NotImplementedException
 
 class Plugin(object):

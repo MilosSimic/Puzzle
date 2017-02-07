@@ -1,5 +1,3 @@
-
-
 class state_const:
 	INSTALLED = 'INSTALLED'
 	RESOLVED = 'RESOLVED'

@@ -1,13 +1,15 @@
-from core import Puzzle, Plugin
+from puzzle import Puzzle, Plugin
 from os.path import isfile, join, getsize
 from os import getcwd
 import unittest
-from core.state import statemachine
+from puzzle.core.state import statemachine
+
+PATH = "puzzle/plugins"
 
 class PuzzleTestBasic(unittest.TestCase):
 
 	def setUp(self):
-		self.p = Puzzle(plugins_dir=join(getcwd(), 'plugins'))
+		self.p = Puzzle(plugins_dir=join(getcwd(), PATH))
 
 	def test_creation_puzzle(self):
 		self.assertIsNotNone("Creating instance of Puzzle.", self.p)
@@ -30,14 +32,14 @@ class PuzzleTestBasic(unittest.TestCase):
 class PuzzleTestLifecycle(unittest.TestCase):
 
 	def setUp(self):
-		self.p = Puzzle(plugins_dir=join(getcwd(), 'plugins'))
+		self.p = Puzzle(plugins_dir=join(getcwd(), PATH))
 
 	def test_creation_puzzle(self):
 		self.assertIsNotNone("Creating instance of Puzzle.", self.p)
 
 	def test_loading_plugins(self):
 		self.p.load_plugins()
-		self.assertEqual(self.p.table.size(), 3)
+		self.assertEqual(self.p.table.size(), 2)
 
 	def test_resolve_state(self):
 		self.p.load_plugins()
@@ -78,7 +80,7 @@ class PuzzleTestLifecycle(unittest.TestCase):
 
 		self.p.table.stop_plugin(0)
 		self.p.table.unregister_plugin(0, False)
-		self.assertEqual(self.p.table.size(), 2)
+		self.assertEqual(self.p.table.size(), 1)
 
 	def test_unregister_plugin_refresh(self):
 		self.p.load_plugins()
@@ -87,7 +89,7 @@ class PuzzleTestLifecycle(unittest.TestCase):
 
 		self.p.table.stop_plugin(0)
 		self.p.table.unregister_plugin(0, True)
-		self.assertEqual(self.p.table.size(), 3)
+		self.assertEqual(self.p.table.size(), 2)
 
 	def test_resolve_plugin_after_refresh(self):
 		self.p.load_plugins()
@@ -102,22 +104,22 @@ class PuzzleTestLifecycle(unittest.TestCase):
 		self.assertIsInstance(plugin.state, statemachine.Resolved)
 
 
-class PuzzleTestDownloadPluginArchive(unittest.TestCase):
+# class PuzzleTestDownloadPluginArchive(unittest.TestCase):
 
-	def setUp(self):
-		self.p = Puzzle(plugins_dir=join(getcwd(), 'plugins'))
+# 	def setUp(self):
+# 		self.p = Puzzle(plugins_dir=join(getcwd(), PATH))
 
-	def test_download_archive(self):
-		self.p.load_plugins()
+# 	def test_download_archive(self):
+# 		self.p.load_plugins()
 
-		url = 'file:///Users/milossimic/Desktop/plugin3.zip'
-		self.p.download_puzzle_part(url)
+# 		url = 'file:///Users/milossimic/Desktop/plugin3.zip'
+# 		self.p.download_puzzle_part(url)
 
-		self.assertEqual(self.p.table.size(), 3)
+# 		self.assertEqual(self.p.table.size(), 3)
 
-	def test_plugins_instalation(self):
-		for id,(key, plugin) in enumerate(self.p.table_items()):
-			self.assertTrue(issubclass(plugin, Plugin))
+# 	def test_plugins_instalation(self):
+# 		for id,(key, plugin) in enumerate(self.p.table_items()):
+# 			self.assertTrue(issubclass(plugin, Plugin))
 		
 
 if __name__ == '__main__':

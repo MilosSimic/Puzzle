@@ -1,9 +1,9 @@
-from core import Puzzle, Plugin
+from puzzle.core import Puzzle, Plugin
 from os.path import isfile, join, getsize
 from os import getcwd
-from core.state import statemachine
+from puzzle.core.state import statemachine
 
-path = join(getcwd(), 'plugins')
+path = join(getcwd(), 'puzzle/plugins')
 p = Puzzle(plugins_dir=path)
 
 p.load_plugins()

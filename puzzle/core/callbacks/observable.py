@@ -1,4 +1,4 @@
-from . import Event
+from event import Event
 
 class Observable(object):
     def __init__(self):

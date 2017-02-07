@@ -1,4 +1,4 @@
-from core import Plugin
+from puzzle.core import Plugin
 
 class B(Plugin):
 	def __init__(self, par1="bla2"):

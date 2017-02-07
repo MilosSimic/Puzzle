@@ -1,4 +1,4 @@
-from core.excp.lifecycle import LifecycleException
+from puzzle.core.excp.lifecycle import LifecycleException
 from state_const import state_const
 
 class State(object):

@@ -1,4 +1,4 @@
-from core import Plugin
+from puzzle.core import Plugin
 from time import sleep
 
 class A(Plugin):
