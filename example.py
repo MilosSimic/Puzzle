@@ -3,7 +3,7 @@ from os.path import isfile, join, getsize
 from os import getcwd
 from puzzle.core.state import statemachine
 
-path = join(getcwd(), 'puzzle/plugins')
+path = join(getcwd(), 'plugins')
 p = Puzzle(plugins_dir=path)
 
 p.load_plugins()

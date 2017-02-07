@@ -4,7 +4,7 @@ from os import getcwd
 import unittest
 from puzzle.core.state import statemachine
 
-PATH = "puzzle/plugins"
+PATH = "plugins"
 
 class PuzzleTestBasic(unittest.TestCase):
 
@@ -104,22 +104,22 @@ class PuzzleTestLifecycle(unittest.TestCase):
 		self.assertIsInstance(plugin.state, statemachine.Resolved)
 
 
-# class PuzzleTestDownloadPluginArchive(unittest.TestCase):
+class PuzzleTestDownloadPluginArchive(unittest.TestCase):
 
-# 	def setUp(self):
-# 		self.p = Puzzle(plugins_dir=join(getcwd(), PATH))
+	def setUp(self):
+		self.p = Puzzle(plugins_dir=join(getcwd(), PATH))
 
-# 	def test_download_archive(self):
-# 		self.p.load_plugins()
+	def test_download_archive(self):
+		self.p.load_plugins()
 
-# 		url = 'file:///Users/milossimic/Desktop/plugin3.zip'
-# 		self.p.download_puzzle_part(url)
+		url = 'file:///path_to_test_plugin_archive.zip'
+		self.p.download_puzzle_part(url)
 
-# 		self.assertEqual(self.p.table.size(), 3)
+		self.assertEqual(self.p.table.size(), 3)
 
-# 	def test_plugins_instalation(self):
-# 		for id,(key, plugin) in enumerate(self.p.table_items()):
-# 			self.assertTrue(issubclass(plugin, Plugin))
+	def test_plugins_instalation(self):
+		for id,(key, plugin) in enumerate(self.p.table_items()):
+			self.assertTrue(issubclass(plugin, Plugin))
 		
 
 if __name__ == '__main__':

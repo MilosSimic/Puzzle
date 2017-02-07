@@ -2,12 +2,12 @@ from state import Resolved
 from excp import LifecycleException, NotImplementedException
 
 class Plugin(object):
-	def __init__(self, name, description, version, author, image=None):
-		self.name = name
-		self.description = description
-		self.version = version
-		self.author = author
-		self.image = image
+	def __init__(self, **kwargs):
+		self.name = kwargs['name']
+		self.description = kwargs['description']
+		self.version = kwargs['version']
+		self.author = kwargs['author']
+		self.image = kwargs['image']
 		self.state = Resolved(self)
 
 	def start(self):
